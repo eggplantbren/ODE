@@ -7,9 +7,9 @@ import ODE.RungeKutta4
 
 -- Damped Pendulum 
 pendulumDeriv :: U.Vector Double -> U.Vector Double
-pendulumDeriv state = U.fromList [v, -sin x - 0.03*v] where
-                        x = state U.! 0
-                        v = state U.! 1
+pendulumDeriv state = U.fromList [v, - sin x - 0.01*v] where
+                        x   = state U.! 0
+                        v   = state U.! 1
 
 -- Pendulum problem
 pendulumProblem :: Problem
@@ -21,6 +21,7 @@ main = do
   -- Run parameters
   let dt     = 0.01
       tFinal = 100.0
+      thin   = 10
       steps  = floor $ tFinal / dt
 
   -- Construct the solver
@@ -29,7 +30,7 @@ main = do
         Just s  -> s
 
   -- Run the solver
-  _ <- doIterations steps solver
+  _ <- doIterations steps thin solver
 
   return ()
 

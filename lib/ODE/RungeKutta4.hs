@@ -62,14 +62,20 @@ update RK4Solver {..}
       RK4Solver problem' dt' iteration' currentState'
 
 -- Do iterations
-doIterations :: Int -> RK4Solver -> IO RK4Solver
-doIterations n solver
-    | n  < 0    = error "Invalid input."
+doIterations :: Int -> Int -> RK4Solver
+             -> IO RK4Solver
+doIterations n thin solver
+    | n < 0     = error "Invalid input."
     | n == 0    = do
                     putStrLn $ toString solver
                     return solver
     | otherwise = do
-                    putStrLn $ toString solver
+                    -- Print info
+                    if iteration solver `mod` thin == 0
+                      then putStrLn $ toString solver
+                    else
+                      return ()
+
                     let !solver' = update solver
-                    doIterations (n - 1) solver'
+                    doIterations (n - 1) thin solver'
 
