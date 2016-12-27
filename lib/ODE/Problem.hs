@@ -8,6 +8,6 @@ data Problem = Problem
                  initialConditions :: U.Vector Double,
 
                  -- Derivative function
-                 deriv :: U.Vector Double -> U.Vector Double
+                 deriv             :: U.Vector Double -> U.Vector Double
                }
 

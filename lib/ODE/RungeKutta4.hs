@@ -1,5 +1,8 @@
+{-# LANGUAGE RecordWildCards #-}
+{-# LANGUAGE BangPatterns #-}
+
 module ODE.RungeKutta4
-  (makeRK4Solver)
+  (makeRK4Solver, doIterations)
   where
 
 import qualified Data.Vector.Unboxed as U
@@ -26,8 +29,47 @@ makeRK4Solver problemIn dtIn
                       currentState = initialConditions problemIn
                     }
 
+-- For nice printing
+toString :: RK4Solver -> String
+toString RK4Solver {..} = show (fromIntegral iteration * dt) ++ " "
+                            ++ mconcat coords where
+  coords = map (\x -> show x ++ " ") $ U.toList currentState
+
+-- Vector operations
+-- Input x, y, scalar c
+-- Output x + c*y
+addMult :: U.Vector Double -> U.Vector Double -> Double
+        -> U.Vector Double
+addMult x y 0.0 = U.zipWith (+) x y
+addMult x y c   = U.zipWith (+) x cy where
+  cy = U.map (* c) y
+
 -- Update
 update :: RK4Solver -> RK4Solver
-update solver = solver
+update RK4Solver {..}
+  = let
+      problem'       = problem
+      dt'            = dt
+      iteration'     = iteration + 1
+      currentState'  = U.zipWith5 func currentState f1 f2 f3 f4
+      f1             = d currentState
+      f2             = d $ addMult currentState f1 (0.5 * dt)
+      f3             = d $ addMult currentState f2 (0.5 * dt)
+      f4             = d $ addMult currentState f3 dt
+      d              = deriv problem
+      func x y z u v = x + (dt / 6.0) * (y + 2.0*z + 2.0*u + v)
+    in
+      RK4Solver problem' dt' iteration' currentState'
 
+-- Do iterations
+doIterations :: Int -> RK4Solver -> IO RK4Solver
+doIterations n solver
+    | n  < 0    = error "Invalid input."
+    | n == 0    = do
+                    putStrLn $ toString solver
+                    return solver
+    | otherwise = do
+                    putStrLn $ toString solver
+                    let !solver' = update solver
+                    doIterations (n - 1) solver'
 
