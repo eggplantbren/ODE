@@ -19,8 +19,8 @@ lorenzDeriv state = U.fromList [xDot, yDot, zDot] where
                         rho   = 28.0
 
 -- Lorenz problem
-lorenzProblem :: Problem
-lorenzProblem = Problem (U.fromList [1.0, 0.0, 0.0]) lorenzDeriv
+lorenzProblem :: FirstOrderProblem
+lorenzProblem = FirstOrderProblem (U.fromList [1.0, 0.0, 0.0]) lorenzDeriv
 
 -- Main action
 main :: IO ()

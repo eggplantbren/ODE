@@ -11,14 +11,14 @@ import ODE.Problem
 -- A type to represent a solver
 data RK4Solver = RK4Solver
                  {
-                   problem      :: Problem,
+                   problem      :: FirstOrderProblem,
                    dt           :: Double,
                    iteration    :: Int,
                    currentState :: U.Vector Double
                  }
 
 -- Smart constructor
-makeRK4Solver :: Problem -> Double -> Maybe RK4Solver
+makeRK4Solver :: FirstOrderProblem -> Double -> Maybe RK4Solver
 makeRK4Solver problemIn dtIn
     | dtIn <= 0.0 = Nothing
     | otherwise   = Just RK4Solver
