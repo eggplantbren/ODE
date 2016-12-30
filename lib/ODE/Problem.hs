@@ -17,7 +17,7 @@ data PosVelProblem = PosVelProblem -- A problem with positions and velocities
                        initialPos :: U.Vector Double,
                        initialVel :: U.Vector Double,
 
-                       -- Derivative function (only depends on positions)
+                       -- Acceleration function (only depends on positions)
                        accel :: U.Vector Double -> U.Vector Double
                      }
 

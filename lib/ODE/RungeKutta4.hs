@@ -7,6 +7,7 @@ module ODE.RungeKutta4
 
 import qualified Data.Vector.Unboxed as U
 import ODE.Problem
+import ODE.Utils
 
 -- A type to represent a solver
 data RK4Solver = RK4Solver
@@ -34,15 +35,6 @@ toString :: RK4Solver -> String
 toString RK4Solver {..} = show (fromIntegral iteration * dt) ++ " "
                             ++ mconcat coords where
   coords = map (\x -> show x ++ " ") $ U.toList currentState
-
--- Vector operations
--- Input x, y, scalar c
--- Output x + c*y
-addMult :: U.Vector Double -> U.Vector Double -> Double
-        -> U.Vector Double
-addMult x y 0.0 = U.zipWith (+) x y
-addMult x y c   = U.zipWith (+) x cy where
-  cy = U.map (* c) y
 
 -- Update
 update :: RK4Solver -> RK4Solver
