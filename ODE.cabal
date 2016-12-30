@@ -18,7 +18,8 @@ library
   default-language:    Haskell2010
   build-depends:       base >= 4.7 && < 5
   ghc-options:         -Wall -O2
-  exposed-modules:     ODE.Problem,
+  exposed-modules:     ODE.Leapfrog,
+                       ODE.Problem,
                        ODE.RungeKutta4,
                        ODE.Utils
   build-depends:       vector
@@ -26,6 +27,15 @@ library
 executable Lorenz
   hs-source-dirs:      src
   main-is:             Lorenz.hs
+  default-language:    Haskell2010
+  build-depends:       base >= 4.7 && < 5,
+                       ODE,
+                       vector
+  ghc-options:         -Wall -O2
+
+executable Pendulum
+  hs-source-dirs:      src
+  main-is:             Pendulum.hs
   default-language:    Haskell2010
   build-depends:       base >= 4.7 && < 5,
                        ODE,
