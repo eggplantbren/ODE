@@ -1,5 +1,3 @@
-{-# LANGUAGE RecordWildCards #-}
-
 module ODE.Problem where
 
 import qualified Data.Vector.Unboxed as U

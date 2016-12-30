@@ -5,6 +5,7 @@ module ODE.Leapfrog
   (makeLeapfrogSolver, doIterations)
   where
 
+import Control.Monad (when)
 import qualified Data.Vector.Unboxed as U
 import ODE.Problem
 import ODE.Utils
@@ -36,7 +37,7 @@ makeLeapfrogSolver problemIn dtIn
 toString :: LeapfrogSolver -> String
 toString LeapfrogSolver {..} = show (fromIntegral iteration * dt) ++ " "
                             ++ mconcat coords where
-  coords = map (\x -> show x ++ " ") $ U.toList pos ++ (U.toList vel)
+  coords = map (\x -> show x ++ " ") $ U.toList pos ++ U.toList vel
 
 
 -- Update
@@ -64,10 +65,8 @@ doIterations n thin solver
                     return solver
     | otherwise = do
                     -- Print info
-                    if iteration solver `mod` thin == 0
-                      then putStrLn $ toString solver
-                    else
-                      return ()
+                    when (iteration solver `mod` thin == 0)
+                                    (putStrLn $ toString solver)
 
                     let !solver' = update solver
                     doIterations (n - 1) thin solver'

@@ -5,6 +5,7 @@ module ODE.RungeKutta4
   (makeRK4Solver, doIterations)
   where
 
+import Control.Monad (when)
 import qualified Data.Vector.Unboxed as U
 import ODE.Problem
 import ODE.Utils
@@ -63,10 +64,8 @@ doIterations n thin solver
                     return solver
     | otherwise = do
                     -- Print info
-                    if iteration solver `mod` thin == 0
-                      then putStrLn $ toString solver
-                    else
-                      return ()
+                    when (iteration solver `mod` thin == 0)
+                                    (putStrLn $ toString solver)
 
                     let !solver' = update solver
                     doIterations (n - 1) thin solver'

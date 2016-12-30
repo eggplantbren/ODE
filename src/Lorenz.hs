@@ -3,6 +3,7 @@ module Main where
 import qualified Data.Vector.Unboxed as U
 import ODE.Problem
 import ODE.RungeKutta4
+import Data.Maybe (fromMaybe)
 
 
 -- Lorenz system 
@@ -32,9 +33,8 @@ main = do
       steps  = floor $ tFinal / dt
 
   -- Construct the solver
-  let solver = case (makeRK4Solver lorenzProblem dt) of
-        Nothing -> error "Failed to create solver."
-        Just s  -> s
+  let solver = fromMaybe (error "Failed to create solver.")
+                                (makeRK4Solver lorenzProblem dt)
 
   -- Run the solver
   _ <- doIterations steps thin solver

@@ -3,6 +3,7 @@ module Main where
 import qualified Data.Vector.Unboxed as U
 import ODE.Problem
 import ODE.Leapfrog
+import Data.Maybe (fromMaybe)
 
 -- Pendulum accel function
 pendulumAccel :: U.Vector Double -> U.Vector Double
@@ -25,9 +26,8 @@ main = do
       steps  = floor $ tFinal / dt
 
   -- Construct the solver
-  let solver = case (makeLeapfrogSolver pendulumProblem dt) of
-        Nothing -> error "Failed to create solver."
-        Just s  -> s
+  let solver = fromMaybe (error "Failed to create solver.")
+                                (makeLeapfrogSolver pendulumProblem dt)
 
   -- Run the solver
   _ <- doIterations steps thin solver
