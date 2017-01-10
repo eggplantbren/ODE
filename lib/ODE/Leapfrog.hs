@@ -1,16 +1,14 @@
 {-# LANGUAGE RecordWildCards #-}
 {-# LANGUAGE BangPatterns #-}
 
-module ODE.Leapfrog
-  (makeLeapfrogSolver, doIterations)
-  where
+module ODE.Leapfrog where
 
-import Control.Monad (when)
+-- Imports
 import qualified Data.Vector.Unboxed as U
 import ODE.Problem
 import ODE.Utils
 
--- A type to represent a solver
+-- A type to represent a Leapfrog solver
 data LeapfrogSolver = LeapfrogSolver
                  {
                    problem   :: PosVelProblem,
@@ -19,6 +17,12 @@ data LeapfrogSolver = LeapfrogSolver
                    pos       :: U.Vector Double,
                    vel       :: U.Vector Double
                  }
+
+-- For nice printing of just pos and vel
+instance Show LeapfrogSolver where
+  show LeapfrogSolver {..} = show (fromIntegral iteration * dt)
+                               ++ " " ++ mconcat coords where
+    coords = map (\x -> show x ++ " ") $ U.toList pos ++ U.toList vel
 
 -- Smart constructor
 makeLeapfrogSolver :: PosVelProblem -> Double -> Maybe LeapfrogSolver
@@ -32,13 +36,6 @@ makeLeapfrogSolver problemIn dtIn
                       pos       = initialPos problemIn,
                       vel       = initialVel problemIn
                     }
-
--- For nice printing
-toString :: LeapfrogSolver -> String
-toString LeapfrogSolver {..} = show (fromIntegral iteration * dt) ++ " "
-                            ++ mconcat coords where
-  coords = map (\x -> show x ++ " ") $ U.toList pos ++ U.toList vel
-
 
 -- Update
 update :: LeapfrogSolver -> LeapfrogSolver
@@ -54,20 +51,4 @@ update LeapfrogSolver {..}
       a          = accel problem
     in
       LeapfrogSolver problem' dt' iteration' pos' vel'
-
--- Do iterations
-doIterations :: Int -> Int -> LeapfrogSolver
-             -> IO LeapfrogSolver
-doIterations n thin solver
-    | n < 0     = error "Invalid input."
-    | n == 0    = do
-                    putStrLn $ toString solver
-                    return solver
-    | otherwise = do
-                    -- Print info
-                    when (iteration solver `mod` thin == 0)
-                                    (putStrLn $ toString solver)
-
-                    let !solver' = update solver
-                    doIterations (n - 1) thin solver'
 

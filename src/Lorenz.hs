@@ -1,10 +1,11 @@
 module Main where
 
+-- O,[prts
+import Data.Maybe (fromMaybe)
 import qualified Data.Vector.Unboxed as U
 import ODE.Problem
 import ODE.RungeKutta4
-import Data.Maybe (fromMaybe)
-
+import ODE.Utils
 
 -- Lorenz system 
 lorenzDeriv :: U.Vector Double -> U.Vector Double
@@ -27,17 +28,17 @@ lorenzProblem = FirstOrderProblem (U.fromList [1.0, 0.0, 0.0]) lorenzDeriv
 main :: IO ()
 main = do
   -- Run parameters
-  let dt     = 0.001
-      tFinal = 100.0
-      thin   = 10
-      steps  = floor $ tFinal / dt
+  let timeStep = 0.001
+      tFinal   = 100.0
+      thin     = 10
+      steps    = floor $ tFinal / timeStep
 
   -- Construct the solver
   let solver = fromMaybe (error "Failed to create solver.")
-                                (makeRK4Solver lorenzProblem dt)
+                                (makeRK4Solver lorenzProblem timeStep)
 
   -- Run the solver
-  _ <- doIterations steps thin solver
+  _ <- doIterations steps thin solver ODE.RungeKutta4.update iteration
 
   return ()
 

@@ -1,15 +1,17 @@
 module Main where
 
-import qualified Data.Vector.Unboxed as U
-import ODE.Problem
-import ODE.Leapfrog
+-- Imports
 import Data.Maybe (fromMaybe)
+import qualified Data.Vector.Unboxed as U
+import ODE.Leapfrog
+import ODE.Problem
+import ODE.Utils
 
 -- Pendulum accel function
 pendulumAccel :: U.Vector Double -> U.Vector Double
-pendulumAccel pos = U.fromList [a] where
+pendulumAccel position = U.fromList [a] where
   a = -(sin x)
-  x = pos U.! 0
+  x = position U.! 0
 
 -- Pendulum problem
 pendulumProblem :: PosVelProblem
@@ -20,17 +22,17 @@ pendulumProblem = PosVelProblem (U.fromList [1.0]) (U.fromList [0.0])
 main :: IO ()
 main = do
   -- Run parameters
-  let dt     = 0.001
-      tFinal = 100.0
-      thin   = 10
-      steps  = floor $ tFinal / dt
+  let timeStep = 0.001
+      tFinal   = 100.0
+      thin     = 10
+      steps    = floor $ tFinal / timeStep
 
   -- Construct the solver
   let solver = fromMaybe (error "Failed to create solver.")
-                                (makeLeapfrogSolver pendulumProblem dt)
+                                (makeLeapfrogSolver pendulumProblem timeStep)
 
   -- Run the solver
-  _ <- doIterations steps thin solver
+  _ <- doIterations steps thin solver ODE.Leapfrog.update iteration
 
   return ()
 
