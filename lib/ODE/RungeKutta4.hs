@@ -48,7 +48,8 @@ update RK4Solver {..}
       f3             = d $ addMult currentState f2 (0.5 * dt)
       f4             = d $ addMult currentState f3 dt
       d              = deriv problem
-      func x y z u v = x + (dt / 6.0) * (y + 2.0*z + 2.0*u + v)
+      dtOverSix      = dt / 6.0
+      func x y z u v = x + dtOverSix * (y + 2.0*z + 2.0*u + v)
     in
       RK4Solver problem' dt' iteration' currentState'
 
